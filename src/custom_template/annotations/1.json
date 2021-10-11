@@ -1,0 +1,12 @@
+{
+    "annotations": [{
+        "id": "Initial Demo",
+        "lead_time": 0.0,
+        "result": []
+    }],
+    "data": {
+        "image": "https://www.firstmedicalsolutions.com/images/doc6.png"
+    },
+    "id": 1,
+    "predictions": []
+}

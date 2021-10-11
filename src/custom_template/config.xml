@@ -1,0 +1,11 @@
+<View>
+  <RectangleLabels name="tag" toName="img">
+    <Label background="#2076B4" value="Table"></Label>
+    <Label background="#FF7F0F" value="Table Data Column"></Label>
+    <Label background="#2AA02B" value="Table Data Row"></Label>
+    <Label background="#D72727" value="Table Header Row"></Label>
+    <Label background="#9467BD" value="Table Scroll Bar"></Label>
+    <Label background="#8B564B" value="Table Scroll Buttons"></Label>
+  </RectangleLabels>
+  <Image name="img" value="$image"></Image>
+</View>
