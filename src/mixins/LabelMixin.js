@@ -5,7 +5,7 @@ import InfoModal from "../components/Infomodal/Infomodal";
 /**
  * Wrapper of Control item
  */
-const LabelMixin = types.model("LabelMixin").actions(self => ({
+const LabelMixin = types.model("LabelMixin").actions((self) => ({
   /**
    * Usage check of selected controls before send annotation to server
    */
@@ -20,7 +20,7 @@ const LabelMixin = types.model("LabelMixin").actions(self => ({
   // copy state from another Labels object
   copyState(labels) {
     // self.unselectAll();
-    labels.selectedValues().forEach(l => {
+    labels.selectedValues().forEach((l) => {
       self.findLabel(l).setSelected(true);
     });
   },
@@ -37,7 +37,7 @@ const LabelMixin = types.model("LabelMixin").actions(self => ({
 
     if (obj.id) self.pid = obj.id;
 
-    objectType.forEach(obj => {
+    objectType.forEach((obj) => {
       const findedObj = self.findLabel(obj);
 
       if (!findedObj) {

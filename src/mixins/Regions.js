@@ -27,11 +27,11 @@ const RegionsMixin = types
     shapeRef: null,
     drawingTimeout: null,
   }))
-  .views(self => ({
+  .views((self) => ({
     get perRegionStates() {
       const states = self.states;
 
-      return states && states.filter(s => s.perregion === true);
+      return states && states.filter((s) => s.perregion === true);
     },
 
     get store() {
@@ -57,9 +57,8 @@ const RegionsMixin = types
     get inSelection() {
       return self.annotation?.regionStore.isSelected(self);
     },
-
   }))
-  .actions(self => {
+  .actions((self) => {
     return {
       setParentID(id) {
         self.parentID = id;
@@ -148,7 +147,7 @@ const RegionsMixin = types
 
       toStateJSON() {
         const parent = self.parent;
-        const buildTree = control => {
+        const buildTree = (control) => {
           const tree = {
             id: self.pid,
             from_name: control.name,
@@ -165,7 +164,7 @@ const RegionsMixin = types
 
         if (self.states && self.states.length) {
           return self.states
-            .map(s => {
+            .map((s) => {
               const ser = self.serialize(s, parent);
 
               if (!ser) return null;
@@ -196,10 +195,10 @@ const RegionsMixin = types
       selectRegion() {},
 
       /**
-     * @todo fix "keep selected" setting
-     * Common logic for unselection; specific actions should be in `afterUnselectRegion`
-     * @param {boolean} tryToKeepStates try to keep states selected if such settings enabled
-     */
+       * @todo fix "keep selected" setting
+       * Common logic for unselection; specific actions should be in `afterUnselectRegion`
+       * @param {boolean} tryToKeepStates try to keep states selected if such settings enabled
+       */
       unselectRegion(tryToKeepStates = false) {
         console.log("UNSELECT REGION", "you should not be here");
         // eslint-disable-next-line no-constant-condition
@@ -247,8 +246,8 @@ const RegionsMixin = types
 
         if (additiveMode) {
           annotation.toggleRegionSelection(self);
-        } else {const wasNotSelected = !self.selected;
-
+        } else {
+          const wasNotSelected = !self.selected;
 
           if (wasNotSelected) {
             annotation.selectArea(self);
@@ -279,11 +278,15 @@ const RegionsMixin = types
         e && e.stopPropagation();
       },
 
+      setAreaHidden(value) {
+        self.hidden = value;
+      },
+
       notifyDrawingFinished({ destroy = false } = {}) {
         if (!self.dynamic || self.fromSuggestion) return;
         const { regions } = getRoot(self).annotationStore.selected;
 
-        const connectedRegions = regions.filter(r => {
+        const connectedRegions = regions.filter((r) => {
           if (destroy && r === self) return false;
           return r.dynamic && r.type === self.type && r.labelName === self.labelName;
         });
@@ -299,6 +302,7 @@ const RegionsMixin = types
           }, timeout);
         }
       },
-    };});
+    };
+  });
 
 export default types.compose(RegionsMixin, AnnotationMixin);

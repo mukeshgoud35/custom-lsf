@@ -20,11 +20,9 @@
     "CODE_OF_CONDUCT.md",
     "CONTRIBUTING.md"
   ],
-  "size-limit": [
-    {
-      "path": "build/static/js/*.js"
-    }
-  ],
+  "size-limit": [{
+    "path": "build/static/js/*.js"
+  }],
   "devDependencies": {
     "@babel/core": "^7.12.17",
     "@babel/plugin-proposal-class-properties": "^7.12.13",
@@ -127,7 +125,6 @@
     "build:module": "BUILD_MODULE=true npm run build:no-hash",
     "build": "npx webpack",
     "watch": "npx webpack --watch",
-    "copy-examples": "bash scripts/copy.sh",
     "eject": "react-scripts eject",
     "docs:generate": "node scripts/create-docs.js",
     "lint:write": "eslint --debug src/ --fix",
