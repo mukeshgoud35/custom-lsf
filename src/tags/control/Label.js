@@ -128,7 +128,6 @@ const Model = types
       setTimeout(() => {
         self.hideOtherLabelAreas(self.parent.selectedLabels[0]?.value);
       }, 500);
-      console.log(self);
       // here we check if you click on label from labels group
       // connected to the region on the same object tag that is
       // right now highlighted, and if that region is readonly

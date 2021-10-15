@@ -120,8 +120,7 @@ const DrawingTool = types
 
         currentArea.setDrawing(false);
         self.applyActiveStates(newArea);
-        // self.deleteRegion();
-        // console.log("self ==>", self);
+        self.deleteRegion();
         self.annotationStore.annotations[0].selectArea(newArea);
         return newArea;
       },
