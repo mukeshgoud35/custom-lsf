@@ -63,7 +63,7 @@ export default inject("store")(
         );
       }
 
-      if ((userGenerate && !sentUserGenerate) || (store.explore && !userGenerate && store.hasInterface("submit"))) {
+      if ((userGenerate && sentUserGenerate) || (!userGenerate && store.hasInterface("submit"))) {
         submitButton = (
           <Tooltip title="Save results: [ Ctrl+Enter ]" mouseEnterDelay={TOOLTIP_DELAY}>
             <Button

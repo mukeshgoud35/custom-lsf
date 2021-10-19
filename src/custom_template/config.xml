@@ -7,5 +7,5 @@
     <Label background="#9467BD" value="Table Scroll Bar"></Label>
     <Label background="#8B564B" value="Table Scroll Buttons"></Label>
   </RectangleLabels>
-  <Image name="img" value="$image"></Image>
+  <Image name="img" value="$image;$image1"></Image>
 </View>

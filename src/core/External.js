@@ -4,12 +4,17 @@
 /**
  * Callback on submit annotation
  */
-function onSubmitAnnotation() {}
+
+ function onSubmitAnnotation(ls, annotation) {
+  console.log(annotation.serializeAnnotation());
+}
 
 /**
  * Callback on update annotation
  */
-function onUpdateAnnotation() {}
+function onUpdateAnnotation(ls, annotation) {
+  console.log(annotation.serializeAnnotation());
+}
 
 /**
  * Callback on delete annotation
@@ -54,12 +59,12 @@ function onSelectAnnotation(annotation, previousAnnotation) {}
 /**
  * Called when "Accept" or "Fix + Accept" is pressed
  */
-function onAcceptAnnotation(store, entity){}
+function onAcceptAnnotation(store, entity) {}
 
 /**
  * Called when "Reject" is pressed
  */
-function onRejectAnnotation(store, entity){}
+function onRejectAnnotation(store, entity) {}
 
 /**
  * Called when storage gets initialized for the first time

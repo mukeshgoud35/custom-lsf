@@ -15,7 +15,7 @@ export const SidebarTabs = observer(({ active, children }) => {
       <Block name="sidebar-tabs">
         {tabs.length > 1 && (
           <Elem name="toggle">
-            {tabs.map(tab => (
+            {tabs.map((tab) => (
               <Elem
                 name="tab"
                 key={tab.props.name}
@@ -28,7 +28,7 @@ export const SidebarTabs = observer(({ active, children }) => {
           </Elem>
         )}
 
-        <Elem name="content">{tabs.find(tab => tab.props.name === selected)}</Elem>
+        <Elem name="content">{tabs.find((tab) => tab.props.name === selected)}</Elem>
       </Block>
     </SidebarContext.Provider>
   );

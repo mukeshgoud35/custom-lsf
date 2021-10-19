@@ -40,7 +40,7 @@ const SettingsModel = types
 
     sidePanelMode: types.optional(
       types.enumeration([SIDEPANEL_MODE_REGIONS, SIDEPANEL_MODE_LABELS]),
-      SIDEPANEL_MODE_REGIONS,
+      SIDEPANEL_MODE_LABELS,
     ),
 
     imageFullSize: types.optional(types.boolean, false),
@@ -56,7 +56,7 @@ const SettingsModel = types
     showPredictionsPanel: types.optional(types.boolean, true),
     // showScore: types.optional(types.boolean, false),
   })
-  .views(self => ({
+  .views((self) => ({
     get annotation() {
       return getRoot(self).annotationStore.selected;
     },
@@ -64,7 +64,7 @@ const SettingsModel = types
       return self.sidePanelMode === SIDEPANEL_MODE_LABELS;
     },
   }))
-  .actions(self => ({
+  .actions((self) => ({
     afterCreate() {
       // sandboxed environment may break even on check of this property
       try {
@@ -85,13 +85,13 @@ const SettingsModel = types
 
         typeof lsp === "object" &&
           lsp !== null &&
-          Object.keys(lsp).forEach(k => {
+          Object.keys(lsp).forEach((k) => {
             if (k in self) self[k] = lsp[k];
           });
       }
 
       // capture changes and save it
-      onSnapshot(self, ss => {
+      onSnapshot(self, (ss) => {
         localStorage.setItem(lsKey, JSON.stringify(ss));
       });
     },
@@ -117,7 +117,7 @@ const SettingsModel = types
 
       // hack to enable it from outside, because Text spawns spans on every rerender
       // @todo it should be enabled inside Text
-      document.querySelectorAll(".htx-text").forEach(text => text.classList.toggle("htx-line-numbers"));
+      document.querySelectorAll(".htx-text").forEach((text) => text.classList.toggle("htx-line-numbers"));
     },
 
     toggleContinuousLabeling() {

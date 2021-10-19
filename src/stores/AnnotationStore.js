@@ -31,11 +31,7 @@ const Annotation = types
 
     selected: types.optional(types.boolean, false),
     type: types.enumeration(["annotation", "prediction", "history"]),
-    acceptedState: types.optional(
-      types.maybeNull(
-        types.enumeration(['fixed', 'accepted', 'rejected']),
-      ), null,
-    ),
+    acceptedState: types.optional(types.maybeNull(types.enumeration(["fixed", "accepted", "rejected"])), null),
 
     createdDate: types.optional(types.string, Utils.UDate.currentISODate()),
     createdAgo: types.maybeNull(types.string),
@@ -75,13 +71,12 @@ const Annotation = types
     regionStore: types.optional(RegionStore, {
       regions: [],
     }),
-
   })
-  .preProcessSnapshot(sn => {
+  .preProcessSnapshot((sn) => {
     // sn.draft = Boolean(sn.draft);
     let user = sn.user ?? sn.completed_by ?? undefined;
 
-    if (user && typeof user !== 'number') {
+    if (user && typeof user !== "number") {
       user = user.id;
     }
 
@@ -92,7 +87,7 @@ const Annotation = types
       skipped: sn.skipped || sn.was_cancelled,
     };
   })
-  .views(self => ({
+  .views((self) => ({
     get store() {
       return getRoot(self);
     },
@@ -114,7 +109,7 @@ const Annotation = types
     },
 
     get objects() {
-      return Array.from(self.names.values()).filter(tag => !tag.toname);
+      return Array.from(self.names.values()).filter((tag) => !tag.toname);
     },
 
     get regions() {
@@ -124,7 +119,7 @@ const Annotation = types
     get results() {
       const results = [];
 
-      self.areas.forEach(a => a.results.forEach(r => results.push(r)));
+      self.areas.forEach((a) => a.results.forEach((r) => results.push(r)));
       return results;
     },
 
@@ -133,7 +128,7 @@ const Annotation = types
       self.areas.toJSON();
 
       return self.results
-        .map(r => r.serialize())
+        .map((r) => r.serialize())
         .filter(Boolean)
         .concat(self.relationStore.serializeAnnotation());
     },
@@ -144,16 +139,14 @@ const Annotation = types
 
       const selectedResults = [];
 
-      self.areas.forEach(a => {
+      self.areas.forEach((a) => {
         if (!a.inSelection) return;
-        a.results.forEach(r => {
+        a.results.forEach((r) => {
           selectedResults.push(r);
         });
       });
 
-      return selectedResults
-        .map(r => r.serialize())
-        .filter(Boolean);
+      return selectedResults.map((r) => r.serialize()).filter(Boolean);
     },
 
     get highlightedNode() {
@@ -181,7 +174,7 @@ const Annotation = types
 
     get onlyTextObjects() {
       return self.objects.reduce((res, obj) => {
-        return res && ['text', 'hypertext'].includes(obj.type);
+        return res && ["text", "hypertext"].includes(obj.type);
       }, true);
     },
   }))
@@ -194,7 +187,7 @@ const Annotation = types
     versions: {},
     resultSnapshot: "",
   }))
-  .actions(self => ({
+  .actions((self) => ({
     reinitHistory() {
       self.history.reinit();
       self.autosave && self.autosave.cancel();
@@ -210,7 +203,7 @@ const Annotation = types
 
       if (root && root !== self && ivokeEvent) {
         const as = root.annotationStore;
-        const assignGroundTruths = p => {
+        const assignGroundTruths = (p) => {
           if (self !== p) p.setGroundTruth(false, false);
         };
 
@@ -221,7 +214,7 @@ const Annotation = types
       self.ground_truth = value;
 
       if (ivokeEvent) {
-        getEnv(self).events.invoke('groundTruth', self.store, self, value);
+        getEnv(self).events.invoke("groundTruth", self.store, self, value);
       }
     },
 
@@ -266,7 +259,7 @@ const Annotation = types
     },
 
     extendSelectionWith(areas) {
-      for (let area of (Array.isArray(areas) ? areas : [areas])) {
+      for (let area of Array.isArray(areas) ? areas : [areas]) {
         self.regionStore.toggleSelection(area, true);
       }
     },
@@ -283,13 +276,13 @@ const Annotation = types
     },
 
     deleteSelectedRegions() {
-      self.selectedRegions.forEach(region => {
+      self.selectedRegions.forEach((region) => {
         region.deleteRegion();
       });
     },
 
     unselectStates() {
-      self.names.forEach(tag => tag.unselectAll && tag.unselectAll());
+      self.names.forEach((tag) => tag.unselectAll && tag.unselectAll());
     },
 
     /**
@@ -327,9 +320,9 @@ const Annotation = types
 
       // @todo classifiactions have `readonly===undefined` so they won't be deleted with `false`
       // @todo check this later for consistency
-      if (deleteReadOnly === false) regions = regions.filter(r => r.readonly === false);
+      if (deleteReadOnly === false) regions = regions.filter((r) => r.readonly === false);
 
-      regions.forEach(r => r.deleteRegion());
+      regions.forEach((r) => r.deleteRegion());
       self.updateObjects();
     },
 
@@ -344,7 +337,7 @@ const Annotation = types
 
     loadRegionState(region) {
       region.states &&
-        region.states.forEach(s => {
+        region.states.forEach((s) => {
           const mainViewTag = self.names.get(s.name);
 
           mainViewTag.unselectAll && mainViewTag.unselectAll();
@@ -354,7 +347,7 @@ const Annotation = types
 
     unloadRegionState(region) {
       region.states &&
-        region.states.forEach(s => {
+        region.states.forEach((s) => {
           const mainViewTag = self.names.get(s.name);
 
           mainViewTag.unselectAll && mainViewTag.unselectAll();
@@ -369,7 +362,7 @@ const Annotation = types
     validate() {
       let ok = true;
 
-      self.traverseTree(function(node) {
+      self.traverseTree(function (node) {
         if (node.required === true) {
           ok = node.validate();
           if (ok === false) {
@@ -390,7 +383,7 @@ const Annotation = types
      *
      */
     beforeSend() {
-      self.traverseTree(node => {
+      self.traverseTree((node) => {
         if (node && node.beforeSend) {
           node.beforeSend();
         }
@@ -407,11 +400,11 @@ const Annotation = types
     deleteRegion(region) {
       let { regions } = self.regionStore;
       // move all children into the parent region of the given one
-      const children = regions.filter(r => r.parentID === region.id);
+      const children = regions.filter((r) => r.parentID === region.id);
 
-      children && children.forEach(r => r.setParentID(region.parentID));
+      children && children.forEach((r) => r.setParentID(region.parentID));
 
-      if (!region.classification) getEnv(self).events.invoke('entityDelete', region);
+      if (!region.classification) getEnv(self).events.invoke("entityDelete", region);
 
       self.relationStore.deleteNodeRelation(region);
       if (region.type === "polygonregion") {
@@ -428,16 +421,16 @@ const Annotation = types
     // update some fragile parts after snapshot manipulations (undo/redo)
     updateObjects() {
       self.unselectAll();
-      self.names.forEach(tag => tag.needsUpdate && tag.needsUpdate());
-      self.areas.forEach(area => area.updateAppearenceFromState && area.updateAppearenceFromState());
+      self.names.forEach((tag) => tag.needsUpdate && tag.needsUpdate());
+      self.areas.forEach((area) => area.updateAppearenceFromState && area.updateAppearenceFromState());
     },
 
     setInitialValues() {
       // <Label selected="true"/>
-      self.names.forEach(tag => {
+      self.names.forEach((tag) => {
         if (tag.type.endsWith("labels")) {
           // @todo check for choice="multiple" and multiple preselected labels
-          const preselected = tag.children?.find(label => label.initiallySelected);
+          const preselected = tag.children?.find((label) => label.initiallySelected);
 
           if (preselected) preselected.setSelected(true);
         }
@@ -471,7 +464,7 @@ const Annotation = types
     },
 
     async startAutosave() {
-      if (!getEnv(self).events.hasEvent('submitDraft')) return;
+      if (!getEnv(self).events.hasEvent("submitDraft")) return;
       if (self.type !== "annotation") return;
 
       // some async tasks should be performed after deserialization
@@ -538,7 +531,7 @@ const Annotation = types
     },
 
     afterAttach() {
-      self.traverseTree(node => {
+      self.traverseTree((node) => {
         // called when the annotation is attached to the main store,
         // at this point the whole tree is available. This method
         // may come handy when you have a tag that acts or depends
@@ -556,7 +549,7 @@ const Annotation = types
           const tools = node.getToolsManager();
           const states = self.toNames.get(node.name);
 
-          states && states.forEach(s => tools.addToolsFromControl(s));
+          states && states.forEach((s) => tools.addToolsFromControl(s));
         }
 
         // @todo special place to init such predefined values; `afterAttach` of the tag?
@@ -586,13 +579,13 @@ const Annotation = types
 
       // [TODO] we need to traverse this two times, fix
       // Hotkeys setup
-      self.traverseTree(node => {
+      self.traverseTree((node) => {
         if (node && node.onHotKey && node.hotkey) {
           hotkeys.addKey(node.hotkey, node.onHotKey, undefined, node.hotkeyScope);
         }
       });
 
-      self.traverseTree(node => {
+      self.traverseTree((node) => {
         // add Space hotkey for playbacks of audio, there might be
         // multiple audios on the screen
         if (node && !node.hotkey && (node.type === "audio" || node.type === "audioplus")) {
@@ -606,7 +599,7 @@ const Annotation = types
         }
       });
 
-      self.traverseTree(node => {
+      self.traverseTree((node) => {
         /**
          * Hotkey for controls
          */
@@ -661,7 +654,7 @@ const Annotation = types
 
       const area = self.areas.put(areaRaw);
 
-      if (!area.classification) getEnv(self).events.invoke('entityCreate', area);
+      if (!area.classification) getEnv(self).events.invoke("entityCreate", area);
 
       if (self.store.settings.selectAfterCreate) {
         if (!area.classification) {
@@ -682,7 +675,7 @@ const Annotation = types
       const prevSize = self.regionStore.regions.length;
 
       // Generate new ids to prevent collisions
-      results.forEach((result)=>{
+      results.forEach((result) => {
         const regionId = result.id;
 
         if (!regionIdMap[regionId]) {
@@ -706,7 +699,7 @@ const Annotation = types
       return (json ?? []).reduce((res, objRaw) => {
         const obj = JSON.parse(JSON.stringify(objRaw));
 
-        if (obj.type === 'relation') {
+        if (obj.type === "relation") {
           res.push(objRaw);
           return res;
         }
@@ -728,7 +721,7 @@ const Annotation = types
                 const value = obj.value[key];
 
                 if (value && value.length && labelsContainer.type.endsWith("labels")) {
-                  const filteredValue = value.filter(labelName => !!labelsContainer.findLabel(labelName));
+                  const filteredValue = value.filter((labelName) => !!labelsContainer.findLabel(labelName));
                   const oldKey = key;
 
                   key = key === labelsContainer.type ? key : labelsContainer.type;
@@ -745,10 +738,7 @@ const Annotation = types
                 }
               }
 
-              if (
-                !tagNames.has(obj.from_name) ||
-                (!obj.value[key].length && !tagNames.get(obj.from_name).allowempty)
-              ) {
+              if (!tagNames.has(obj.from_name) || (!obj.value[key].length && !tagNames.get(obj.from_name).allowempty)) {
                 delete obj.value[key];
                 if (tagNames.has(obj.to_name)) {
                   // Redirect references to existent tool
@@ -761,7 +751,7 @@ const Annotation = types
                     const simpleLabelsType = "labels";
 
                     for (const altType of [altToolsControllerType, sameLabelsType, simpleLabelsType]) {
-                      const state = states.find(state => state.type === altType);
+                      const state = states.find((state) => state.type === altType);
 
                       if (state) {
                         obj.type = altType;
@@ -795,13 +785,13 @@ const Annotation = types
         self.acceptAllSuggestions();
       } else {
         self.suggestions.forEach((suggestion) => {
-          if (['richtextregion', 'text'].includes(suggestion.type)) {
+          if (["richtextregion", "text"].includes(suggestion.type)) {
             self.acceptSuggestion(suggestion.id);
           }
         });
       }
 
-      self.objects.forEach(obj => obj.needsUpdate?.());
+      self.objects.forEach((obj) => obj.needsUpdate?.());
     },
 
     /**
@@ -811,25 +801,24 @@ const Annotation = types
      * suggestions: boolean
      * }} options Deserialization options
      */
-    deserializeResults(json, { suggestions=false } = {}) {
+    deserializeResults(json, { suggestions = false } = {}) {
       try {
         const objAnnotation = self.prepareAnnotation(json);
         const areas = suggestions ? self.suggestions : self.areas;
 
         self._initialAnnotationObj = objAnnotation;
 
-        objAnnotation.forEach(obj => {
-          self.deserializeSingleResult(obj,
+        objAnnotation.forEach((obj) => {
+          self.deserializeSingleResult(
+            obj,
             (id) => areas.get(id),
             (snapshot) => areas.put(snapshot),
           );
         });
 
-        self.results
-          .filter(r => r.area.classification)
-          .forEach(r => r.from_name.updateFromResult?.(r.mainValue));
+        self.results.filter((r) => r.area.classification).forEach((r) => r.from_name.updateFromResult?.(r.mainValue));
 
-        objAnnotation.forEach(obj => {
+        objAnnotation.forEach((obj) => {
           if (obj["type"] === "relation") {
             self.relationStore.deserializeRelation(
               `${obj.from_id}#${self.id}`,
@@ -846,7 +835,7 @@ const Annotation = types
     },
 
     deserializeAnnotation(...args) {
-      console.warn('deserializeAnnotation() is deprecated. Use deserializeResults() instead');
+      console.warn("deserializeAnnotation() is deprecated. Use deserializeResults() instead");
       return self.deserializeResults(...args);
     },
 
@@ -962,7 +951,7 @@ export default types
 
     validation: types.maybeNull(types.array(ValidationError)),
   })
-  .views(self => ({
+  .views((self) => ({
     get store() {
       return getRoot(self);
     },
@@ -971,7 +960,7 @@ export default types
       return self.viewingAllAnnotations || self.viewingAllPredictions;
     },
   }))
-  .actions(self => {
+  .actions((self) => {
     function toggleViewingAll() {
       if (self.viewingAllAnnotations || self.viewingAllPredictions) {
         if (self.selected) {
@@ -979,7 +968,7 @@ export default types
           self.selected.selected = false;
         }
 
-        self.annotations.forEach(c => {
+        self.annotations.forEach((c) => {
           c.editable = false;
         });
       } else {
@@ -1029,7 +1018,7 @@ export default types
       self._unselectAll();
 
       // sad hack with pk while sdk are not using pk everywhere
-      const c = list.find(c => c.id === id || c.pk === String(id)) || list[0];
+      const c = list.find((c) => c.id === id || c.pk === String(id)) || list[0];
 
       if (!c) return null;
       c.selected = true;
@@ -1053,7 +1042,7 @@ export default types
       c.editable = true;
       c.setupHotKeys();
 
-      getEnv(self).events.invoke('selectAnnotation', c, selected);
+      getEnv(self).events.invoke("selectAnnotation", c, selected);
 
       return c;
     }
@@ -1065,7 +1054,7 @@ export default types
     }
 
     function deleteAnnotation(annotation) {
-      getEnv(self).events.invoke('deleteAnnotation', self.store, annotation);
+      getEnv(self).events.invoke("deleteAnnotation", self.store, annotation);
 
       /**
        * MST destroy annotation
@@ -1091,7 +1080,7 @@ export default types
       if (self.root) return;
 
       if (!config) {
-        return (self.root = ViewModel.create({ id:"empty" }));
+        return (self.root = ViewModel.create({ id: "empty" }));
       }
 
       // convert config to mst model
@@ -1105,7 +1094,7 @@ export default types
       }
       const modelClass = Registry.getModelByTag(rootModel.type);
       // hacky way to get all the available object tag names
-      const objectTypes = Registry.objectTypes().map(type => type.name.replace("Model", "").toLowerCase());
+      const objectTypes = Registry.objectTypes().map((type) => type.name.replace("Model", "").toLowerCase());
       const objects = [];
 
       self.validate(VALIDATORS.CONFIG, rootModel);
@@ -1117,8 +1106,16 @@ export default types
         return showError(e);
       }
 
-      Tree.traverseTree(self.root, node => {
+      Tree.traverseTree(self.root, (node) => {
         if (node?.name) {
+          // const isImg = node.name === "img";
+          // let newNode = isImg ? [node] : node;
+
+          // if (isImg && self.names.has(node?.name)) {
+          //   const oldNode = self.names.get(node.name);
+
+          //   newNode = [...oldNode, node];
+          // }
           self.names.put(node);
           if (objectTypes.includes(node.type)) objects.push(node.name);
         }
@@ -1126,7 +1123,7 @@ export default types
 
       // initialize toName bindings [DOCS] name & toName are used to
       // connect different components to each other
-      Tree.traverseTree(self.root, node => {
+      Tree.traverseTree(self.root, (node) => {
         const isControlTag = node.name && !objectTypes.includes(node.type);
         // auto-infer missed toName if there is only one object tag in the config
 
@@ -1210,7 +1207,6 @@ export default types
       return record;
     }
 
-
     function addHistory(options = {}) {
       options.type = "history";
 
@@ -1224,7 +1220,7 @@ export default types
     }
 
     function clearHistory() {
-      self.history.forEach(item => destroy(item));
+      self.history.forEach((item) => destroy(item));
       self.history.length = 0;
     }
 
@@ -1234,13 +1230,13 @@ export default types
 
     function addAnnotationFromPrediction(prediction) {
       // immutable work, because we'll change ids soon
-      const s = prediction._initialAnnotationObj.map(r => ({ ...r }));
+      const s = prediction._initialAnnotationObj.map((r) => ({ ...r }));
       const c = self.addAnnotation({ userGenerate: true, result: s });
 
       const ids = {};
 
       // Area id is <uniq-id>#<annotation-id> to be uniq across all tree
-      s.forEach(r => {
+      s.forEach((r) => {
         if ("id" in r) {
           const id = r.id.replace(/#.*$/, `#${c.id}`);
 
@@ -1249,7 +1245,7 @@ export default types
         }
       });
 
-      s.forEach(r => {
+      s.forEach((r) => {
         if (r.parent_id) {
           if (ids[r.parent_id]) r.parent_id = ids[r.parent_id];
           // impossible case but to not break the app better to reset it
@@ -1265,11 +1261,11 @@ export default types
     }
 
     /** ERRORS HANDLING */
-    const handleErrors = errors => {
+    const handleErrors = (errors) => {
       self.addErrors(errors);
     };
 
-    const addErrors = errors => {
+    const addErrors = (errors) => {
       const ids = [];
 
       const newErrors = [...(self.validation ?? []), ...errors].reduce((res, error) => {
