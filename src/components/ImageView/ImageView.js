@@ -3,6 +3,7 @@ import React, { Component, createRef, forwardRef, Fragment, memo, useState } fro
 import { Group, Layer, Line, Rect, Stage } from "react-konva";
 import { observer } from "mobx-react";
 import { getRoot, isAlive } from "mobx-state-tree";
+// import mergeImages from "merge-images";
 
 import ImageGrid from "../ImageGrid/ImageGrid";
 import ImageTransformer from "../ImageTransformer/ImageTransformer";
@@ -282,6 +283,7 @@ export default observer(
       imgStyle: {},
       ratio: 1,
       pointer: [0, 0],
+      imagesDataUrl: this.props.item._value,
     };
 
     imageRef = createRef();
@@ -507,6 +509,40 @@ export default observer(
       }
     };
 
+    // setImagesDataUrl = async () => {
+    //   const {
+    //     item: { images },
+    //   } = this.props;
+
+    //   try {
+    //     // const imgUrl = await mergeImages(images);
+    //     const imgs = await Promise.all(
+    //       images.map((image) =>
+    //         fetch(image, {
+    //           // mode: "no-cors",
+    //           headers: {
+    //             // "Content-Type": "image/jpg",
+    //             "Access-Control-Allow-Origin": "*",
+    //             "Access-Control-Allow-Headers": "*",
+    //           },
+    //         }),
+    //       ),
+    //     );
+    //     const data = await Promise.all(imgs.map((img) => img.text()));
+    //     const data1 = await Promise.all(imgs.map((img) => img.arrayBuffer()));
+    //     const data2 = await Promise.all(imgs.map((img) => img.blob()));
+
+    //     // const data3 = await Promise.all(imgs.map((img) => img.json()));
+    //     // const data4 = await Promise.all(imgs.map((img) => img.formData()));
+    //     console.log(imgs, data, data1, data2); // , data3, data4);
+    //   } catch (err) {
+    //     console.log(err.message);
+    //   }
+
+    //   // .then((imgUrl) => console.log(imgUrl))
+    //   // .catch((err) => console.log(err));
+    // };
+
     componentDidMount() {
       window.addEventListener("resize", this.onResize);
       document.addEventListener("keydown", this.keyDownShortCut);
@@ -517,6 +553,7 @@ export default observer(
       }
 
       this.updateReadyStatus();
+      // this.setImagesDataUrl();
 
       hotkeys.addDescription("shift", "Pan image");
     }
@@ -665,6 +702,10 @@ export default observer(
         suggestedShape: suggestedShapeRegions,
       });
 
+      // console.log(mergeImages(item.images));
+
+      // const imagesDataUrl = await mergeImages(item.images);
+
       return (
         <ObjectTag
           item={item}
@@ -689,16 +730,27 @@ export default observer(
                 style={{ marginTop: `${this.state.ratio * 100}%`, width: item.stageWidth }}
               />
             )}
-            <img
-              ref={(ref) => {
-                item.setImageRef(ref);
-                this.imageRef.current = ref;
-              }}
-              src={item._value}
-              onLoad={item.updateImageSize}
-              onError={this.handleError}
-              alt="LS"
-            />
+            {item.images.map((image, i) =>
+              i === 0 ? (
+                <img
+                  ref={(ref) => {
+                    item.setImageRef(ref);
+                    this.imageRef.current = ref;
+                  }}
+                  src={image}
+                  onLoad={item.updateImageSize}
+                  onError={this.handleError}
+                  alt="LS"
+                />
+              ) : (
+                <img
+                  src={image}
+                  // onLoad={item.updateImageSize}
+                  // onError={this.handleError}
+                  alt="LS"
+                />
+              ),
+            )}
           </div>
           {/* @todo this is dirty hack; rewrite to proper async waiting for data to load */}
           {item.stageWidth <= 1 ? (
